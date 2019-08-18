@@ -47,6 +47,7 @@ import spoon.testing.utils.ModelUtils;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -385,5 +386,22 @@ public class DefaultPrettyPrinterTest {
 			assertTrue(m.find());
 			assertEquals("this(v, true)", m.group(1));
 		}
+	}
+
+	@Test
+	public void testStaticMethodImports() {
+		Launcher launcher = new Launcher();
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.getEnvironment().setAutoImports(true);
+		launcher.addInputResource("./src/test/resources/noclasspath/imports/StaticImports.java");
+		launcher.buildModel();
+
+		DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(launcher.getEnvironment());
+		CtType<?> type = launcher.getFactory().Class().getAll().get(0);
+		printer.calculate(type.getPosition().getCompilationUnit(), Collections.singletonList(type));
+
+		String result = printer.getResult();
+
+		assertTrue(result.contains("assertThat(42)"));
 	}
 }

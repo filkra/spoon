@@ -97,7 +97,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	@Override
 	public <T> void visitCtExecutableReference(CtExecutableReference<T> reference) {
 		enter(reference);
-		if (reference.isStatic()) {
+		if (reference.isStatic() && reference.getDeclaringType() != null) {
 			addMethodImport(reference);
 		} else if (reference.isConstructor()) {
 			scan(reference.getDeclaringType());
